@@ -77,29 +77,33 @@ logger.addHandler(smtpHandler)
 )
 def main(input_file:str)-> None:
     """download smarstsheet and save to correct folder"""
-    load_dotenv(dotenv_path=resource_path(".env"))
+    try:
+        load_dotenv(dotenv_path=resource_path(".env"))
 
-    api: str = os.environ.get('SMARTSHEET_API', '')
-    report_id: str = os.environ.get('SMARTSHEET_ID', '')
-    sheet_name: str = os.environ.get('SMARTSHEET_NAME', '')
+        api: str = os.environ.get('SMARTSHEET_API', '')
+        report_id: str = os.environ.get('SMARTSHEET_ID', '')
+        sheet_name: str = os.environ.get('SMARTSHEET_NAME', '')
 
-    smart = smartsheet.Smartsheet(api)
-    smart.assume_user(os.environ.get('SMARTSHEET_USER', ''))
+        smart = smartsheet.Smartsheet(api)
+        smart.assume_user(os.environ.get('SMARTSHEET_USER', ''))
 
-    dated_name: str = datetime.now().strftime(sheet_name)
-    full_path: str = os.environ.get('TARGET_DIR','') + '/' + dated_name
+        dated_name: str = datetime.now().strftime(sheet_name)
+        full_path: str = os.environ.get('TARGET_DIR','') + '/' + dated_name
 
-    if input_file:
-        full_path = input_file
+        if input_file:
+            full_path = input_file
 
-    path: Path = Path(full_path)
-    dir_name = str(path.parent.absolute())
-    stem: str = path.stem
-    file_name: str = path.name
-    if stem == file_name:
-        file_name += '.xlsx'
+        path: Path = Path(full_path)
+        dir_name = str(path.parent.absolute())
+        stem: str = path.stem
+        file_name: str = path.name
+        if stem == file_name:
+            file_name += '.xlsx'
 
-    smart.Reports.get_report_as_excel(report_id, dir_name, file_name)
+        smart.Reports.get_report_as_excel(report_id, dir_name, file_name)
+    except Exception:
+        logger.critical(traceback.format_exc())
+        raise
     sys.exit()
 
 
