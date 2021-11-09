@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """Pull copy of Total Rec Boat Sales
 
-    To Dos:
-    * unit tests
+    Will download smartsheet report as a xlsx file. Allows for override of
+    destination file name. On error an email will be sent to the administrator
 """
 
 import logging
@@ -20,7 +20,7 @@ def resource_path(relative_path: str) -> str:
     """Get absolute path to resource, works for dev and for PyInstaller
 
     Arguments:
-        relative_path str -- releative path from current directory + file name
+        relative_path: str -- releative path from current directory + file name
 
     Returns:
         str -- absoulte path to file
@@ -70,7 +70,14 @@ logger.addHandler(smtpHandler)
 )
 @click.option('-v', '--verbose', count=True)
 def main(input_file:str, verbose: int)-> None:
-    """download smarstsheet and save to correct folder"""
+    """download smarstsheet report and save as .xlsx file 
+
+    Arguments:
+        input_file: str -- folder / filename to save spreadsheet as can
+                           override .xlsx extension. If no extension is
+                           provided then .xlsx will automatically be appended.
+        verboste: int   -- enable verbose output mode
+    """
     try:
         load_dotenv(dotenv_path=resource_path(".env"))
 
