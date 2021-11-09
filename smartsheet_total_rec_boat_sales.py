@@ -57,7 +57,7 @@ smtpHandler = logging.handlers.SMTPHandler(
     mailhost=MAIL_SERVER,
     fromaddr=MAIL_FROM,
     toaddrs=MAIL_TO,
-    subject="alert!"
+    subject="Smarthsheet Total Rec Sales Spreadsheet Download Error!"
 )
 smtpHandler.setLevel(logging.CRITICAL)
 smtpHandler.setFormatter(formatter)
