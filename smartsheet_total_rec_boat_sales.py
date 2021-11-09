@@ -2,10 +2,7 @@
 """Pull copy of Total Rec Boat Sales
 
     To Dos:
-    * add logging
-    * add emailing failures
     * unit tests
-
 """
 
 import logging
@@ -17,7 +14,6 @@ from pathlib import Path
 from dotenv import load_dotenv
 import click
 import smartsheet  # type: ignore
-
 
 
 def resource_path(relative_path: str) -> str:
@@ -63,9 +59,6 @@ smtpHandler.setLevel(logging.CRITICAL)
 smtpHandler.setFormatter(formatter)
 logger.addHandler(consoleHandler)
 logger.addHandler(smtpHandler)
-
-
-
 
 
 @click.command()
