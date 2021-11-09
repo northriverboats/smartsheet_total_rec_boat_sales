@@ -8,6 +8,8 @@
 
 """
 
+import logging
+import logging.handlers
 import os
 import sys
 from datetime import datetime
@@ -15,6 +17,8 @@ from pathlib import Path
 from dotenv import load_dotenv
 import click
 import smartsheet  # type: ignore
+
+
 
 def resource_path(relative_path: str) -> str:
     """Get absolute path to resource, works for dev and for PyInstaller
@@ -32,6 +36,37 @@ def resource_path(relative_path: str) -> str:
         base_path: str = os.path.abspath(".")  #type: ignore
 
     return os.path.join(base_path, relative_path)
+
+
+# ==================== ENALBE LOGGING
+# DEBUG + = to stdout
+# CRITICAL + = to email
+MAIL_SERVER: str = str(os.environ.get("MAIL_SERVER", ''))
+MAIL_FROM: str = str(os.environ.get("MAIL_FROM", ''))
+MAIL_TO: str = str(os.environ.get("MAIL_TO", ''))
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.DEBUG)
+formatter = logging.Formatter(
+    '%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+
+consoleHandler = logging.StreamHandler(sys.stdout)
+consoleHandler.setLevel(logging.DEBUG)
+consoleHandler.setFormatter(formatter)
+
+smtpHandler = logging.handlers.SMTPHandler(
+    mailhost=MAIL_SERVER,
+    fromaddr=MAIL_FROM,
+    toaddrs=MAIL_TO,
+    subject="alert!"
+)
+smtpHandler.setLevel(logging.CRITICAL)
+smtpHandler.setFormatter(formatter)
+logger.addHandler(consoleHandler)
+logger.addHandler(smtpHandler)
+
+
+
+
 
 @click.command()
 @click.option(
