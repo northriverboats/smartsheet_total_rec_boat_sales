@@ -1,10 +1,18 @@
 #!/usr/bin/env python3
-"""pull copy of Total Rec Boat Sales"""
+"""Pull copy of Total Rec Boat Sales
+
+    To Dos:
+    * add logging
+    * add emailing failures
+    * unit tests
+
+"""
 
 import os
 import sys
 from datetime import datetime
 from dotenv import load_dotenv
+import click
 import smartsheet  # type: ignore
 
 def resource_path(relative_path: str) -> str:
@@ -24,7 +32,13 @@ def resource_path(relative_path: str) -> str:
 
     return os.path.join(base_path, relative_path)
 
-def main()-> None:
+@click.command()
+@click.option(
+    '-f', '--file',
+    required=False,
+    help='full path/filemae/extension',
+)
+def main(file:str)-> None:
     """download smarstsheet and save to correct folder"""
     load_dotenv(dotenv_path=resource_path(".env"))
 
@@ -36,9 +50,11 @@ def main()-> None:
     smart.assume_user(os.environ.get('SMARTSHEET_USER'))
 
     file_name: str = datetime.now().strftime(sheet_name)
+    if file:
+        file_name = file
     smart.Reports.get_report_as_excel(report_id, '/tmp', file_name)
     sys.exit()
 
 
 if __name__ == "__main__":
-    main()
+    main()  # pylint: disable=no-value-for-parameter
