@@ -22,13 +22,14 @@ def main()-> None:
     load_dotenv(dotenv_path=resource_path(".env"))
 
     api: str = os.environ.get('SMARTSHEET_API', '')
-    sheet_id: str = os.environ.get('SMARTSHEET_ID', '')
+    report_id: str = os.environ.get('SMARTSHEET_ID', '')
     sheet_name: str = os.environ.get('SMARTSHEET_NAME', '')
 
     smart = smartsheet.Smartsheet(api)
     smart.assume_user(os.environ.get('SMARTSHEET_USER'))
+
     file_name: str = datetime.now().strftime(sheet_name)
-    smart.Reports.get_report_as_excel(sheet_id, '/tmp', file_name)
+    smart.Reports.get_report_as_excel(report_id, '/tmp', file_name)
 
 
 if __name__ == "__main__":
