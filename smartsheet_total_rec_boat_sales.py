@@ -11,6 +11,7 @@
 import os
 import sys
 from datetime import datetime
+from pathlib import Path
 from dotenv import load_dotenv
 import click
 import smartsheet  # type: ignore
@@ -35,10 +36,11 @@ def resource_path(relative_path: str) -> str:
 @click.command()
 @click.option(
     '-f', '--file',
+    'input_file',
     required=False,
     help='full path/filemae/extension',
 )
-def main(file:str)-> None:
+def main(input_file:str)-> None:
     """download smarstsheet and save to correct folder"""
     load_dotenv(dotenv_path=resource_path(".env"))
 
@@ -47,12 +49,22 @@ def main(file:str)-> None:
     sheet_name: str = os.environ.get('SMARTSHEET_NAME', '')
 
     smart = smartsheet.Smartsheet(api)
-    smart.assume_user(os.environ.get('SMARTSHEET_USER'))
+    smart.assume_user(os.environ.get('SMARTSHEET_USER', ''))
 
-    file_name: str = datetime.now().strftime(sheet_name)
-    if file:
-        file_name = file
-    smart.Reports.get_report_as_excel(report_id, '/tmp', file_name)
+    dated_name: str = datetime.now().strftime(sheet_name)
+    full_path: str = os.environ.get('TARGET_DIR','') + '/' + dated_name
+
+    if input_file:
+        full_path = input_file
+
+    path: Path = Path(full_path)
+    dir_name = str(path.parent.absolute())
+    stem: str = path.stem
+    file_name: str = path.name
+    if stem == file_name:
+        file_name += '.xlsx'
+
+    smart.Reports.get_report_as_excel(report_id, dir_name, file_name)
     sys.exit()
 
 
