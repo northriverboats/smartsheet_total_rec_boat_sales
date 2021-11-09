@@ -68,7 +68,8 @@ logger.addHandler(smtpHandler)
     required=False,
     help='full path/filemae/extension',
 )
-def main(input_file:str)-> None:
+@click.option('-v', '--verbose', count=True)
+def main(input_file:str, verbose: int)-> None:
     """download smarstsheet and save to correct folder"""
     try:
         load_dotenv(dotenv_path=resource_path(".env"))
@@ -93,6 +94,8 @@ def main(input_file:str)-> None:
         if stem == file_name:
             file_name += '.xlsx'
 
+        if verbose:
+            click.echo(f"Saving spreadsheet as: {path}")
         smart.Reports.get_report_as_excel(report_id, dir_name, file_name)
     except Exception:
         logger.critical(traceback.format_exc())
