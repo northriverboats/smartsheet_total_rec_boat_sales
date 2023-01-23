@@ -70,7 +70,7 @@ logger.addHandler(smtpHandler)
 )
 @click.option('-v', '--verbose', count=True)
 def main(input_file:str, verbose: int)-> None:
-    """download smarstsheet report and save as .xlsx file 
+    """download smarstsheet report and save as .xlsx file
 
     Arguments:
         input_file: str -- folder / filename to save spreadsheet as can
