@@ -5,13 +5,12 @@
     destination file name. On error an email will be sent to the administrator
 """
 
-import logging
-import logging.handlers
 import os
 import sys
 from datetime import datetime
 from pathlib import Path
 from dotenv import load_dotenv
+from emailer.emailer import mail_results
 import click
 import smartsheet  # type: ignore
 
@@ -33,32 +32,6 @@ def resource_path(relative_path: str) -> str:
 
     return os.path.join(base_path, relative_path)
 
-
-# ==================== ENALBE LOGGING
-# DEBUG + = to stdout
-# CRITICAL + = to email
-MAIL_SERVER: str = str(os.environ.get("MAIL_SERVER", ''))
-MAIL_FROM: str = str(os.environ.get("MAIL_FROM", ''))
-MAIL_TO: str = str(os.environ.get("MAIL_TO", ''))
-logger = logging.getLogger(__name__)
-logger.setLevel(logging.DEBUG)
-formatter = logging.Formatter(
-    '%(asctime)s - %(name)s - %(levelname)s - %(message)s')
-
-consoleHandler = logging.StreamHandler(sys.stdout)
-consoleHandler.setLevel(logging.DEBUG)
-consoleHandler.setFormatter(formatter)
-
-smtpHandler = logging.handlers.SMTPHandler(
-    mailhost=MAIL_SERVER,
-    fromaddr=MAIL_FROM,
-    toaddrs=MAIL_TO,
-    subject="Smarthsheet Total Rec Sales Spreadsheet Download Error!"
-)
-smtpHandler.setLevel(logging.CRITICAL)
-smtpHandler.setFormatter(formatter)
-logger.addHandler(consoleHandler)
-logger.addHandler(smtpHandler)
 
 
 @click.command()
@@ -105,7 +78,10 @@ def main(input_file:str, verbose: int)-> None:
             click.echo(f"Saving spreadsheet as: {path}")
         smart.Reports.get_report_as_excel(report_id, dir_name, file_name)
     except Exception:
-        logger.critical(traceback.format_exc())
+        # send message
+        mail_results(
+            'Smartsheet Total Rec Boat Sales Error',
+            '<pre>' + traceback.format_exc() + '</pre>')
         raise
     sys.exit()
 
