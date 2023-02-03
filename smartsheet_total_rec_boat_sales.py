@@ -13,6 +13,7 @@ from dotenv import load_dotenv
 from emailer.emailer import mail_results
 import click
 import smartsheet  # type: ignore
+import traceback
 
 
 def resource_path(relative_path: str) -> str:
