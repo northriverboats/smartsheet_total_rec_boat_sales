@@ -140,10 +140,6 @@ def main(input_file:str, verbose: int)-> None:
             'Smartsheet Total Rec Boat Sales Error',
             '<pre>' + traceback.format_exc() + '</pre>')
         raise
-    mail_results(
-		'Just a test for me',
-        'This is a <b>Message</b>.'
-	)
     sys.exit()
 
 
